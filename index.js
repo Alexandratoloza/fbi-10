@@ -9,7 +9,6 @@ import { TokenJWT } from './middlewares/jwt.middleware.js';
 
 const app = express();
 
-// Obtener __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -23,14 +22,15 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.use('/', usuariosRouter);
+app.use('/SignIn', usuariosRouter);
 
 app.get('/agent', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Ruta protegida por JWT
 app.get('/restricted-url', TokenJWT, (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'restricted_page.html'));
+    res.json({ ok: true, msg: "Acceso permitido a la ruta restringida" });
 });
 
 const PORT = process.env.PORT || 3000;
