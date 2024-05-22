@@ -1,47 +1,53 @@
 import { usuariosModel } from "../models/usuarios.model.js";
+import {handleErrorDatabase} from "../database/errors.database.js";
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';  
 
-const crearUsuario = async (req, res) => {
-    try {
-        const { email, password } = req.body;
 
-        
-        if (!email || !password) {
-            return res.status(400).json({ ok: false, msg: "Email y contraseña son requeridos." });
-        }
+//api/v1/usuarios/login
+const login = async (req, res) => {
+    try{
+        const {email, password } = req.body
+        const usuario = await usuariosModel.findOnebyEmail(email)
+        return res.json(usuario)
 
-       
-        const usuario = await usuariosModel.findOne({ email });
-        
-        if (!usuario) {
-            return res.status(400).json({ ok: false, msg: "El email no está registrado!" });
-        }
-
-       
-        const isMatch = await bcrypt.compare(password, usuario.password);
-        
-        if (!isMatch) {
-            return res.status(401).json({ ok: false, msg: "Contraseña inválida!" });
-        }
-
-       
-        const token = jwt.sign(
-            { email: usuario.email },
-            process.env.SECRET_JWT,
-            { expiresIn: '2m' }
-        );
-
-       
-        res.cookie('token', token, { httpOnly: true });
-
-        return res.json({ token, email: usuario.email });
     } catch (error) {
-        console.error(error);
-        return res.status(error.code || 500).json({ ok: false, msg: error.msg || "Error interno del servidor" });
+        console.log(error)
+        const {code, msg} = handleErrorDatabase(error)
+        return res.status(code).json({ok: false, msg})
     }
+
+    }
+
+const register = async (req, res) => {
+
+    try{
+
+        const {email, password} = req.body
+
+       const newUsuario = await usuariosModel.findOnebyEmail(email)
+       if(newUsuario) return res.status(400).json({
+        ok: false,
+        msg: "usuario ya registrado"
+       })
+
+       const salt = await bcrypt.genSalt(10);
+       const hashPassword = await bcrypt.hash(password, salt)
+
+
+        const usuario = await usuariosModel.create({email, password: hashPassword})
+        return res.status(201).json(usuario)
+
+
+    } catch (error) {
+        console.log(error)
+        const {code, msg} = handleErrorDatabase(error)
+        return res.status(code).json({ok: false, msg})
+    }
+    
 }
 
 export const usuariosController = {
-    crearUsuario,
+    login,
+    register
 };

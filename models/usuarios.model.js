@@ -1,27 +1,36 @@
-import { pool } from '../data/connection.js';
+import { pool } from '../database/connection.js';
 
-const find = async(email) => {
+
+const findOnebyEmail = async (email) => {
     const query = {
-        text: ` SELECT * FROM usuarios
-                WHERE EMAIL = $1`,
+        text: `
+        SELECT * FROM USUARIOS 
+        WHERE EMAIL = $1 
+        `,
+
         values: [email]
     }
-    const { rows } = await pool.query(query);
-    return rows[0]; 
+
+    const {rows} = await pool.query(query)
+    return rows [0]
 }
 
-const create = async({ email, password, Usuario}) => {
+const create = async ({email, password}) => {
     const query = {
-        text: ` INSERT INTO usuarios (EMAIL, PASSWORD)
-                VALUES: ($1, $2, $3)
-                RETURNING *;`,
-        values: [email, password, Usuario]
+        text: `
+        INSERT INTO USUARIOS(EMAIL, PASSWORD) 
+        VALUES ($1, $2)
+        RETURNING *
+        `,
+
+        values: [email, password]
     }
-    const { rows } = await pool.query(query);
-    return rows[0];
+
+    const {rows} = await pool.query(query)
+    return rows [0]
 }
 
 export const usuariosModel = {
-    find,
+    findOnebyEmail,
     create
 }

@@ -22,9 +22,9 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.use('/SignIn', usuariosRouter);
+app.use('/api/v1/usuarios', usuariosRouter);
 
-app.get('/agent', (req, res) => {
+app.get('/agentes', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
