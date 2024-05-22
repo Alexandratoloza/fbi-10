@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agente Autenticado!</title>
+
+    <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+  />
+</head>
+<body>
+    <h3 id="email">Email: </h3>
+    <h3>Acceso Concedido</h3>
+    <button id="restricted-button" class="btn btn-danger">Ir a la zona restringida</button>
+
+    <style>
+        * {
+          margin: 0;
+          padding: 0;
+        }
+        body {
+          background: black;
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          height: 60vh;
+        }
+      </style>
+
+    <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js"
+    integrity="sha512-PJa3oQSLWRB7wHZ7GQ/g+qyv6r4mbuhmiDb8BjSFZ8NZ2a42oTtAq5n0ucWAwcQDlikAtkub+tPVCw4np27WCg=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+    ></script>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/';
+        }
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+
+        const emailText = document.querySelector('#email');
+        const restrictedButton = document.querySelector('#restricted-button');
+
+        emailText.textContent = `Email: ${localStorage.getItem('email')}`;
+
+        restrictedButton.addEventListener('click', async () => {
+            try {
+                window.location.href = '/restricted-url';
+            } catch (error) {
+                console.error(error);
+                alert('No se pudo ingresar!');
+            }
+        });
+    </script>
+</body>
+</html>
+
+        
+
+
+    </script>
+</body>
+</html>

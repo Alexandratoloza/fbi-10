@@ -9,7 +9,30 @@ const login = async (req, res) => {
     try{
         const {email, password } = req.body
         const usuario = await usuariosModel.findOnebyEmail(email)
-        return res.json(usuario)
+
+        if(!usuario) return res.status(400).json({
+            ok: false,
+            msg: "email no registrado"
+           })
+
+           if(!password) return res.status(400).json({
+            ok: false,
+            msg: "contraseña  incorrecta"
+           })
+
+    const token = jwt.sign(
+        {email: usuario.email},
+         process.env.secret_jwt,
+        {expiresIn: '2h'}
+    )
+
+    return res.json({
+        token,
+        email: usuario.email
+    })
+     
+
+
 
     } catch (error) {
         console.log(error)

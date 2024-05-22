@@ -1,18 +1,27 @@
 import jwt from 'jsonwebtoken';
 
-export const TokenJWT = (req, res, next) => {
-    const token = req.cookies.token;
+export const verifyTokenJWT = (req, res, next) => {
+    try{
 
-    if (!token) {
-        return res.status(403).json({ ok: false, msg: "Acceso denegado. No se proporcionó token." });
-    }
+        let token = req.headers.authorization
+        if(!token) return res.status(401).json({
 
-    try {
-        const decoded = jwt.verify(token, process.env.SECRET_JWT);
-        req.user = decoded;
-        next();
-    } catch (error) {
-        console.error('Error al verificar el token:', error);
-        return res.status(401).json({ ok: false, msg: "Token inválido o expirado." });
+            ok: false,
+            msg: "No autorizado, no se encuentra usuario"
+       
+        })
+
+        token = token.split("")[1]
+       const payload =  jwt.verify(token, process.env.secret_jwt)
+        console.log(payload)
+        next()
+
+
+    }catch(error){
+        console.log (error)
+        return res.status(401).json({
+            ok: false,
+            msg: "No autorizado"
+        })
     }
 };

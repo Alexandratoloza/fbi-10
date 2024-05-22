@@ -5,7 +5,7 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import usuariosRouter from './routes/usuarios.route.js';
-import { TokenJWT } from './middlewares/jwt.middleware.js';
+import {verifyTokenJWT } from './middlewares/jwt.middleware.js';
 
 const app = express();
 
@@ -18,20 +18,21 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(cookieParser());
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.get('/', (req, res)=>{
+    res.sendFile(__dirname + '/public/index.html');
 });
 
-app.use('/api/v1/usuarios', usuariosRouter);
+app.use('/SignIn', usuariosRouter);
 
-app.get('/agentes', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.get('/agente', (req, res)=>{
+    res.sendFile(__dirname + '/public/agente.html');
 });
 
-// Ruta protegida por JWT
-app.get('/restricted-url', TokenJWT, (req, res) => {
-    res.json({ ok: true, msg: "Acceso permitido a la ruta restringida" });
+app.get('/restricted-url', verifyTokenJWT, (req, res)=>{
+    res.sendFile(__dirname + '/public/restricted_page.html');
+
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
